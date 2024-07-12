@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/marsrovar/wsstomper"
@@ -24,6 +25,8 @@ func main() {
 	IWs.HandleMessage(onMessageSTOMPEvent)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// 瀏覽器會在 header 塞入 ec-WebSocket-Protocol
+		IWs.Upgrader.Subprotocols = strings.Split(r.Header.Get("Sec-WebSocket-Protocol"), ",")
 		IConnectSTOMP(w, r)
 	})
 

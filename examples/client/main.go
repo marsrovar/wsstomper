@@ -20,6 +20,7 @@ func topicTest() {
 		Host:   "127.0.0.1:8080",
 		Path:   "/",
 	}
+
 	conn, resp, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
 		log.Fatalf("couldn't connect to %v: %v\n", u.String(), err)

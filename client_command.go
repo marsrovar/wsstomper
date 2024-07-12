@@ -35,18 +35,21 @@ func (stompS *StompServer) Command(session *melody.Session, msg []byte) error {
 }
 
 func (stompS *StompServer) connectCommand(session *melody.Session, f *frame.Frame) error {
-	version := f.Header.Get(frame.AcceptVersion)
-	if err := stomp.Version(version).CheckSupported(); err != nil {
-		session.Close()
+	v := f.Header.Get(frame.AcceptVersion)
+	version := strings.Split(v, ",")
 
-		return err
+	for _, v := range version {
+		if err := stomp.Version(v).CheckSupported(); err != nil {
+			session.Close()
+			return err
+		}
 	}
 
 	var b bytes.Buffer
 	if err := frame.NewWriter(&b).Write(&frame.Frame{
 		Command: frame.CONNECTED,
 		Header: frame.NewHeader(
-			frame.Version, version,
+			frame.Version, v,
 		),
 	}); err != nil {
 		return err
